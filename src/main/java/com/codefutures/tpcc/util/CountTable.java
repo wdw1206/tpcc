@@ -116,7 +116,7 @@ public class CountTable {
     	ResultSet rs = null;
     	
     	try {
-    		rs = connection.getMetaData().getTables(null, connection.getSchema(), null, types);
+    		rs = connection.getMetaData().getTables(null, connection.getCatalog(), null, types);
         	
         	while(rs.next()) {
         		String table = rs.getString("TABLE_NAME");
