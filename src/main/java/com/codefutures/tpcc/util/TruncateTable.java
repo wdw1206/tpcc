@@ -1,4 +1,4 @@
-package com.codefutures.tpcc;
+package com.codefutures.tpcc.util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,8 +14,9 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codefutures.tpcc.Tpcc;
+import com.codefutures.tpcc.Util;
 import com.codefutures.tpcc.db.ConnectionManager;
-import com.codefutures.tpcc.util.CountTable;
 
 public class TruncateTable {
 

@@ -1,4 +1,4 @@
-package com.codefutures.tpcc.util;
+package com.codefutures.tpcc;
 
 import com.codefutures.tpcc.db.ConnectionManager;
 import org.slf4j.Logger;
