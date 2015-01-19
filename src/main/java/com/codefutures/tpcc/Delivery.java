@@ -7,6 +7,8 @@ import java.util.Date;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
+import com.codefutures.tpcc.db.ConnectionManager;
+
 public class Delivery implements TpccConstants {
     private static final Logger logger = LoggerFactory.getLogger(Driver.class);
     private static final boolean DEBUG = logger.isDebugEnabled();
@@ -36,7 +38,7 @@ public class Delivery implements TpccConstants {
 
             for (d_id = 1; d_id <= DIST_PER_WARE; d_id++) {
 
-
+            	ResultSet rs = null;
                 // Get the prepared statement.
                 //"SELECT COALESCE(MIN(no_o_id),0) FROM new_orders WHERE no_d_id = ? AND no_w_id = ?"
                 if (TRACE)
@@ -44,16 +46,18 @@ public class Delivery implements TpccConstants {
                 try {
                     pStmts.getStatement(25).setInt(1, d_id);
                     pStmts.getStatement(25).setInt(2, w_id);
-                    ResultSet rs = pStmts.getStatement(25).executeQuery();
+                    rs = pStmts.getStatement(25).executeQuery();
 
                     if (rs.next()) {
                         no_o_id = rs.getInt(1);
                     }
 
-                    rs.close();
+//                    rs.close();
                 } catch (SQLException e) {
                     logger.error("SELECT COALESCE(MIN(no_o_id),0) FROM new_orders WHERE no_d_id = " + d_id + " AND no_w_id = " + w_id, e);
                     throw new Exception("Delivery Select transaction error", e);
+                } finally {
+                	ConnectionManager.close(null, null, rs);
                 }
 
                 if (no_o_id == 0) {
@@ -87,17 +91,19 @@ public class Delivery implements TpccConstants {
                     pStmts.getStatement(27).setInt(1, no_o_id);
                     pStmts.getStatement(27).setInt(2, d_id);
                     pStmts.getStatement(27).setInt(3, w_id);
-                    ResultSet rs = pStmts.getStatement(27).executeQuery();
+                    rs = pStmts.getStatement(27).executeQuery();
 
                     if (rs.next()) {
                         c_id = rs.getInt(1);
                     }
 
 
-                    rs.close();
+//                    rs.close();
                 } catch (SQLException e) {
                     logger.error("SELECT o_c_id FROM orders WHERE o_id = " + no_o_id + " AND o_d_id = " + d_id + " AND o_w_id = " + w_id, e);
                     throw new Exception(" Delivery Select transaction error", e);
+                } finally {
+                	ConnectionManager.close(null, null, rs);
                 }
 
                 //Get the prepared Statement
@@ -144,16 +150,18 @@ public class Delivery implements TpccConstants {
                     pStmts.getStatement(30).setInt(1, no_o_id);
                     pStmts.getStatement(30).setInt(2, d_id);
                     pStmts.getStatement(30).setInt(3, w_id);
-                    ResultSet rs = pStmts.getStatement(30).executeQuery();
+                    rs = pStmts.getStatement(30).executeQuery();
                     if (rs.next()) {
                         ol_total = rs.getFloat(1);
                     }
 
 
-                    rs.close();
+//                    rs.close();
                 } catch (SQLException e) {
                     logger.error("SELECT SUM(ol_amount) FROM order_line WHERE ol_o_id = " + no_o_id + " AND ol_d_id = " + d_id + " AND ol_w_id = " + w_id, e);
                     throw new Exception("Delivery Select transaction error", e);
+                } finally {
+                	ConnectionManager.close(null, null, rs);
                 }
 
 

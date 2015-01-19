@@ -1,15 +1,20 @@
 package com.codefutures.tpcc;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.util.Properties;
 
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.codefutures.tpcc.db.ConnectionManager;
 
 
 public class TpccLoad implements TpccConstants {
@@ -76,7 +81,12 @@ public class TpccLoad implements TpccConstants {
 
     }
 
-
+/**
+ * TpccLoad -m JDBC -o output -u root -p 123456 -w 1 -s 1 -i 1
+ * @param overridePropertiesFile
+ * @param argv
+ * @return
+ */
     private int runLoad(boolean overridePropertiesFile, String[] argv) {
 
         if (overridePropertiesFile) {
@@ -97,7 +107,10 @@ public class TpccLoad implements TpccConstants {
                     shardCount = Integer.parseInt(argv[i + 1]);
                 } else if (argv[i].equals("-i")) {
                     shardId = Integer.parseInt(argv[i + 1]);
-                } else {
+                } else if (argv[i].equals("-w")) {
+                	num_ware = Integer.parseInt(argv[i + 1]);
+                }
+                else {
                     System.out.println("Incorrect Argument: " + argv[i]);
                     System.out.println("The possible arguments are as follows: ");
                     System.out.println("-m [mode (FILE or JDBC)]");
@@ -154,6 +167,7 @@ public class TpccLoad implements TpccConstants {
         if (num_ware < 1) {
             throw new RuntimeException("Warehouse count has to be greater than or equal to 1.");
         }
+        javaDriver = "com.mysql.jdbc.Driver";
         if (javaDriver == null) {
             throw new RuntimeException("Java Driver is null.");
         }
@@ -203,10 +217,17 @@ public class TpccLoad implements TpccConstants {
                 Properties jdbcConnectProp = new Properties();
                 jdbcConnectProp.setProperty("user", dbUser);
                 jdbcConnectProp.setProperty("password", dbPassword);
-                jdbcConnectProp.setProperty("useServerPrepStmts", "true");
+                jdbcConnectProp.setProperty("useServerPrepStmts", "false");
                 jdbcConnectProp.setProperty("cachePrepStmts", "true");
+                //************************************************************
+                jdbcConnectProp.setProperty("cachePrepStmts", "true");
+                
+                //************************************************************
+                
+                ConnectionManager.init(dbUser,dbPassword,jdbcUrl);
 
-                conn = DriverManager.getConnection(jdbcUrl, jdbcConnectProp);
+//                conn = DriverManager.getConnection(jdbcUrl, jdbcConnectProp);
+                conn = ConnectionManager.getConnection();
                 conn.setAutoCommit(false);
 
             } catch (SQLException e) {
@@ -221,12 +242,12 @@ public class TpccLoad implements TpccConstants {
                 throw new RuntimeException("Could not create statement", e);
             }
             try {
-                stmt.execute("SET UNIQUE_CHECKS=0");
+                stmt.execute("/*!mycat: sql = select count(*) from orders for update */SET UNIQUE_CHECKS=0");
             } catch (SQLException e) {
                 throw new RuntimeException("Could not set unique checks error", e);
             }
             try {
-                stmt.execute("SET FOREIGN_KEY_CHECKS=0");
+                stmt.execute("/*!mycat: sql = select count(*) from orders for update */SET FOREIGN_KEY_CHECKS=0");
                 stmt.close();
             } catch (SQLException e) {
                 throw new RuntimeException("Could not set foreign key checks error", e);

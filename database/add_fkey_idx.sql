@@ -1,4 +1,4 @@
-SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+/*!mycat: sql = select count(*) from orders for update */SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 
 
 CREATE INDEX idx_customer ON customer (c_w_id,c_d_id,c_last,c_first);
@@ -20,6 +20,5 @@ ALTER TABLE stock ADD CONSTRAINT fkey_stock_2 FOREIGN KEY(s_i_id) REFERENCES ite
 #ALTER TABLE order_line ADD CONSTRAINT fkey_order_line_2 FOREIGN KEY(ol_supply_w_id,ol_i_id) REFERENCES stock(s_w_id,s_i_id);
 #ALTER TABLE history  ADD CONSTRAINT fkey_history_1 FOREIGN KEY(h_c_w_id,h_c_d_id,h_c_id) REFERENCES customer(c_w_id,c_d_id,c_id);
 
-
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+/*!mycat: sql = select count(*) from orders for update */SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+/*!mycat: sql = select count(*) from orders for update */SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

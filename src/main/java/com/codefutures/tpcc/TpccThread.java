@@ -13,6 +13,8 @@ import java.util.Set;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
+import com.codefutures.tpcc.db.ConnectionManager;
+
 public class TpccThread extends Thread {
 
     private static final Logger logger = LoggerFactory.getLogger(TpccThread.class);
@@ -137,7 +139,16 @@ public class TpccThread extends Thread {
             prop.put("user", db_user);
             prop.put("password", db_password);
 
-            conn = DriverManager.getConnection(jdbcUrl, prop);
+//            conn = DriverManager.getConnection(jdbcUrl, prop);
+//            ConnectionManager.init(db_user,db_password,jdbcUrl);
+
+//          conn = DriverManager.getConnection(jdbcUrl, jdbcConnectProp);
+            conn = ConnectionManager.getConnection();
+            
+            
+            
+            
+            
             conn.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
             conn.setAutoCommit(false);
 

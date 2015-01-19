@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
+import com.codefutures.tpcc.db.ConnectionManager;
+
 public class OrderStat implements TpccConstants {
     private static final Logger logger = LoggerFactory.getLogger(Driver.class);
     private static final boolean DEBUG = logger.isDebugEnabled();
@@ -49,10 +51,11 @@ public class OrderStat implements TpccConstants {
             int namecnt = 0;
 
             int n = 0;
-
+            ResultSet rs = null;
             if (byname > 0) {
 
                 c_last = c_last_arg;
+                
 
                 //Get Prepared Statement
                 //"SELECT count(c_id) FROM customer WHERE c_w_id = ? AND c_d_id = ? AND c_last = ?"
@@ -63,15 +66,17 @@ public class OrderStat implements TpccConstants {
                     if (TRACE)
                         logger.trace("SELECT count(c_id) FROM customer WHERE c_w_id = " + c_w_id + " AND c_d_id = " + c_d_id + " AND c_last = " + c_last);
 
-                    ResultSet rs = pStmts.getStatement(20).executeQuery();
+                    rs = pStmts.getStatement(20).executeQuery();
                     if (rs.next()) {
                         namecnt = rs.getInt(1);
                     }
 
-                    rs.close();
+//                    rs.close();
                 } catch (SQLException e) {
                     logger.error("SELECT count(c_id) FROM customer WHERE c_w_id = " + c_w_id + " AND c_d_id = " + c_d_id + " AND c_last = " + c_last, e);
                     throw new Exception("OrderStat Select transaction error", e);
+                } finally {
+                	ConnectionManager.close(null, null, rs);
                 }
 
 
@@ -85,7 +90,7 @@ public class OrderStat implements TpccConstants {
                     if (TRACE) logger.trace("SELECT c_balance, c_first, c_middle, c_last FROM customer WHERE " +
                             "c_w_id = " + c_w_id + " AND c_d_id = " + c_d_id + " AND c_last = " + c_last + " ORDER BY c_first");
 
-                    ResultSet rs = pStmts.getStatement(21).executeQuery();
+                    rs = pStmts.getStatement(21).executeQuery();
                     if (namecnt % 2 == 1) { //?? Check
                         namecnt++;
                     } /* Locate midpoint customer; */
@@ -99,11 +104,14 @@ public class OrderStat implements TpccConstants {
                         c_last = rs.getString(4);
                     }
 
-                    rs.close();
+//                    rs.close();
                 } catch (SQLException e) {
                     logger.error("SELECT c_balance, c_first, c_middle, c_last FROM customer WHERE " +
                             "c_w_id = " + c_w_id + " AND c_d_id = " + c_d_id + " AND c_last = " + c_last + " ORDER BY c_first", e);
                     throw new Exception("OrderStat Select transaction error", e);
+                }
+                finally {
+                	ConnectionManager.close(null, null, rs);
                 }
 
             } else {		/* by number */
@@ -116,7 +124,7 @@ public class OrderStat implements TpccConstants {
                     pStmts.getStatement(22).setInt(3, c_id);
                     if (TRACE) logger.trace("SELECT c_balance, c_first, c_middle, c_last FROM customer WHERE " +
                             "c_w_id = " + c_w_id + " AND c_d_id = " + c_d_id + " AND c_id = " + c_id);
-                    ResultSet rs = pStmts.getStatement(22).executeQuery();
+                    rs = pStmts.getStatement(22).executeQuery();
                     if (rs.next()) {
                         c_balance = rs.getFloat(1);
                         c_first = rs.getString(2);
@@ -124,11 +132,14 @@ public class OrderStat implements TpccConstants {
                         c_last = rs.getString(4);
                     }
 
-                    rs.close();
+//                    rs.close();
                 } catch (SQLException e) {
                     logger.error("SELECT c_balance, c_first, c_middle, c_last FROM customer WHERE " +
                             "c_w_id = " + c_w_id + " AND c_d_id = " + c_d_id + " AND c_id = " + c_id, e);
                     throw new Exception("OrderStat select transaction error", e);
+                }
+                finally {
+                	ConnectionManager.close(null, null, rs);
                 }
 
             }
@@ -147,19 +158,21 @@ public class OrderStat implements TpccConstants {
                 if (TRACE) logger.trace("SELECT o_id, o_entry_d, COALESCE(o_carrier_id,0) FROM orders " +
                         "WHERE o_w_id = " + c_w_id + " AND o_d_id = " + c_d_id + " AND o_c_id = " + c_id + " AND o_id = " +
                         "(SELECT MAX(o_id) FROM orders WHERE o_w_id = " + c_w_id + " AND o_d_id = " + c_d_id + " AND o_c_id = " + c_id);
-                ResultSet rs = pStmts.getStatement(23).executeQuery();
+                rs = pStmts.getStatement(23).executeQuery();
                 if (rs.next()) {
                     o_id = rs.getInt(1);
                     o_entry_d = rs.getString(2);
                     o_carrier_id = rs.getInt(3);
                 }
 
-                rs.close();
+//                rs.close();
             } catch (SQLException e) {
                 logger.error("SELECT o_id, o_entry_d, COALESCE(o_carrier_id,0) FROM orders " +
                         "WHERE o_w_id = " + c_w_id + " AND o_d_id = " + c_d_id + " AND o_c_id = " + c_id + " AND o_id = " +
                         "(SELECT MAX(o_id) FROM orders WHERE o_w_id = " + c_w_id + " AND o_d_id = " + c_d_id + " AND o_c_id = " + c_id, e);
                 throw new Exception("OrderState select transaction error", e);
+            }finally {
+            	ConnectionManager.close(null, null, rs);
             }
 
 
@@ -172,7 +185,7 @@ public class OrderStat implements TpccConstants {
                 if (TRACE)
                     logger.trace("SELECT ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_delivery_d FROM order_line " +
                             "WHERE ol_w_id = " + c_w_id + " AND ol_d_id = " + c_d_id + " AND ol_o_id = " + o_id);
-                ResultSet rs = pStmts.getStatement(24).executeQuery();
+                rs = pStmts.getStatement(24).executeQuery();
                 while (rs.next()) {
                     ol_i_id = rs.getInt(1);
                     ol_supply_w_id = rs.getInt(2);
@@ -181,11 +194,13 @@ public class OrderStat implements TpccConstants {
                     ol_delivery_d = rs.getString(5);
                 }
 
-                rs.close();
+//                rs.close();
             } catch (SQLException e) {
                 logger.error("SELECT ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_delivery_d FROM order_line " +
                         "WHERE ol_w_id = " + c_w_id + " AND ol_d_id = " + c_d_id + " AND ol_o_id = " + o_id, e);
                 throw new Exception("OrderStat select transaction error", e);
+            } finally {
+            	ConnectionManager.close(null, null, rs);
             }
 
             // Commit.

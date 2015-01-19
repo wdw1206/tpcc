@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
+import com.codefutures.tpcc.db.ConnectionManager;
+
 public class Slev implements TpccConstants {
     private static final Logger logger = LoggerFactory.getLogger(Driver.class);
     private static final boolean DEBUG = logger.isDebugEnabled();
@@ -36,21 +38,23 @@ public class Slev implements TpccConstants {
 
             //Get prepared statement
             //"SELECT d_next_o_id FROM district WHERE d_id = ? AND d_w_id = ?"
-
+            ResultSet rs = null;
             try {
                 pStmts.getStatement(32).setInt(1, d_id);
                 pStmts.getStatement(32).setInt(2, w_id);
                 if (TRACE)
                     logger.trace("SELECT d_next_o_id FROM district WHERE d_id = " + d_id + " AND d_w_id = " + w_id);
-                ResultSet rs = pStmts.getStatement(32).executeQuery();
+                rs = pStmts.getStatement(32).executeQuery();
 
                 if (rs.next()) {
                     d_next_o_id = rs.getInt(1);
                 }
-                rs.close();
+//                rs.close();
             } catch (SQLException e) {
                 logger.error("SELECT d_next_o_id FROM district WHERE d_id = " + d_id + " AND d_w_id = " + w_id, e);
                 throw new Exception("Slev select transaction error", e);
+            } finally {
+            	ConnectionManager.close(null, null, rs);
             }
 
             //Get prepared statement
@@ -63,17 +67,19 @@ public class Slev implements TpccConstants {
                 if (TRACE)
                     logger.trace("SELECT DISTINCT ol_i_id FROM order_line WHERE ol_w_id = " + w_id + " AND ol_d_id = " + d_id + " AND ol_o_id < " + d_next_o_id +
                             " AND ol_o_id >= (" + d_next_o_id + " - 20)");
-                ResultSet rs = pStmts.getStatement(32).executeQuery();
+                rs = pStmts.getStatement(32).executeQuery();
 
                 while (rs.next()) {
                     ol_i_id = rs.getInt(1);
                 }
 
-                rs.close();
+//                rs.close();
             } catch (SQLException e) {
                 logger.error("SELECT DISTINCT ol_i_id FROM order_line WHERE ol_w_id = " + w_id + " AND ol_d_id = " + d_id + " AND ol_o_id < " + d_next_o_id +
                         " AND ol_o_id >= (" + d_next_o_id + " - 20)", e);
                 throw new Exception("Slev select transaction error", e);
+            } finally {
+            	ConnectionManager.close(null, null, rs);
             }
 
             //Get prepared statement
@@ -85,15 +91,17 @@ public class Slev implements TpccConstants {
                 pStmts.getStatement(34).setInt(3, level);
                 if (TRACE)
                     logger.trace("SELECT count(*) FROM stock WHERE s_w_id = " + w_id + " AND s_i_id = " + ol_i_id + " AND s_quantity < " + level);
-                ResultSet rs = pStmts.getStatement(34).executeQuery();
+                rs = pStmts.getStatement(34).executeQuery();
                 if (rs.next()) {
                     i_count = rs.getInt(1);
                 }
 
-                rs.close();
+//                rs.close();
             } catch (SQLException e) {
                 logger.error("SELECT count(*) FROM stock WHERE s_w_id = " + w_id + " AND s_i_id = " + ol_i_id + " AND s_quantity < " + level, e);
                 throw new Exception("Slev select transaction error", e);
+            } finally {
+            	ConnectionManager.close(null, null, rs);
             }
 
             // Commit.

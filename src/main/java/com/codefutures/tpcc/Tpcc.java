@@ -12,6 +12,8 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
+import com.codefutures.tpcc.db.ConnectionManager;
+
 public class Tpcc implements TpccConstants {
 
     private static final Logger logger = LoggerFactory.getLogger(Tpcc.class);
@@ -187,7 +189,7 @@ public class Tpcc implements TpccConstants {
             }
         }
 
-
+        javaDriver = "com.mysql.jdbc.Driver";
         if (javaDriver == null) {
             throw new RuntimeException("Java Driver is null.");
         }
@@ -228,6 +230,8 @@ public class Tpcc implements TpccConstants {
         System.out.printf("        [URL]: %s\n", jdbcUrl);
         System.out.printf("       [user]: %s\n", dbUser);
         System.out.printf("       [pass]: %s\n", dbPassword);
+        
+        ConnectionManager.init(dbUser,dbPassword,jdbcUrl);
 
         System.out.printf("  [warehouse]: %d\n", numWare);
         System.out.printf(" [connection]: %d\n", numConn);
