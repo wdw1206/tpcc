@@ -48,7 +48,7 @@ public class DistributeRowUpdateDeadlockTester {
                 conn = ConnectionManager.getTransactionConnection();
                 statement = conn.createStatement();
                 String newData = "update-" + getName() + "-" + new Date();
-//                statement.execute("/*!mycat: sql = select count(*) from orders for update */SET innodb_lock_wait_timeout=300"); //default is 50
+//                statement.execute("/* !mycat: sql = select count(*) from orders for update */SET innodb_lock_wait_timeout=300"); //default is 50
                 String sql = "update item set i_data='" + newData + "' where i_id=1";
                //String sql = "UPDATE district SET d_next_o_id = d_next_o_id + 1 WHERE d_id = 1 AND d_w_id = 4";
                statement.execute(sql);

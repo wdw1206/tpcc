@@ -88,7 +88,7 @@ public class DropTable {
                     dbPassword = argv[i + 1];
                 } else if (argv[i].equals("-l")) {
                     jdbcUrl = argv[i + 1];
-                } 
+                }
                 else {
                     System.out.println("Incorrect Argument: " + argv[i]);
                     System.out.println("The possible arguments are as follows: ");
@@ -104,7 +104,8 @@ public class DropTable {
             dbUser = properties.getProperty(USER);
             dbPassword = properties.getProperty(PASSWORD);
             
-            jdbcUrl = properties.getProperty(JDBCURL);
+            jdbcUrl = properties.getProperty(JDBCURL); 
+            
         }
 
         System.out.printf("*************************************\n");
@@ -160,7 +161,7 @@ public class DropTable {
             stmt = conn.createStatement();
             
             try {
-                stmt.execute("/*!mycat: sql = select count(*) from orders for update */SET UNIQUE_CHECKS=0");
+                stmt.execute("/* !mycat: sql = select count(*) from orders for update */SET UNIQUE_CHECKS=0");
                 stmt.execute("/*!mycat: sql = select count(*) from orders for update */SET FOREIGN_KEY_CHECKS=0");
                 
 //                stmt.execute("SET UNIQUE_CHECKS=0");
@@ -180,7 +181,7 @@ public class DropTable {
                 	stmt.execute(sql);
                 }
                 
-            	 stmt.execute("/*!mycat: sql = select count(*) from orders for update */SET FOREIGN_KEY_CHECKS=1");
+            	 stmt.execute("/* !mycat: sql = select count(*) from orders for update */SET FOREIGN_KEY_CHECKS=1");
 
                 System.out.printf("\n...TPCC drop Table  COMPLETED SUCCESSFULLY.\n");
             } catch (Exception e) {

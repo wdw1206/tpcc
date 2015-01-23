@@ -28,7 +28,6 @@ public class TpccLoad implements TpccConstants {
     private String javaDriver = null;
     private int shardId = -1;
 
-
     /* Global SQL Variables */
     static int num_ware = 0;
     static int fd = 0;
@@ -241,13 +240,19 @@ public class TpccLoad implements TpccConstants {
             } catch (SQLException e) {
                 throw new RuntimeException("Could not create statement", e);
             }
+            String hint = "/* !mycat: sql = select count(*) from orders for update */";
             try {
-                stmt.execute("/*!mycat: sql = select count(*) from orders for update */SET UNIQUE_CHECKS=0");
+            	String sql = "SET UNIQUE_CHECKS=0";
+            	sql = hint + sql;
+            	
+                stmt.execute(sql);
             } catch (SQLException e) {
                 throw new RuntimeException("Could not set unique checks error", e);
             }
             try {
-                stmt.execute("/*!mycat: sql = select count(*) from orders for update */SET FOREIGN_KEY_CHECKS=0");
+            	String sql = "SET FOREIGN_KEY_CHECKS=0";
+            	sql = hint + sql;
+                stmt.execute(sql);
                 stmt.close();
             } catch (SQLException e) {
                 throw new RuntimeException("Could not set foreign key checks error", e);
