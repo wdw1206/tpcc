@@ -160,8 +160,8 @@ public class TruncateTable {
             stmt = conn.createStatement();
             
             try {
-                stmt.execute("/* !mycat: sql = select count(*) from orders for update */SET UNIQUE_CHECKS=0");
-                stmt.execute("/* !mycat: sql = select count(*) from orders for update */SET FOREIGN_KEY_CHECKS=0");
+                stmt.execute("/*#mycat: sql = select count(*) from orders for update */SET UNIQUE_CHECKS=0");
+                stmt.execute("/*#mycat: sql = select count(*) from orders for update */SET FOREIGN_KEY_CHECKS=0");
                 
 //                stmt.execute("SET UNIQUE_CHECKS=0");
 //                stmt.execute("SET FOREIGN_KEY_CHECKS=0");
@@ -180,7 +180,7 @@ public class TruncateTable {
                 	stmt.execute(sql);
                 }
                 
-            	 stmt.execute("/* !mycat: sql = select count(*) from orders for update */SET FOREIGN_KEY_CHECKS=0");
+            	 stmt.execute("/*#mycat: sql = select count(*) from orders for update */SET FOREIGN_KEY_CHECKS=0");
 //            	 stmt.execute("SET UNIQUE_CHECKS=1");
 //                 stmt.execute("SET FOREIGN_KEY_CHECKS=1");
 

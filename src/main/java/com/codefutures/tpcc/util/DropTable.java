@@ -161,7 +161,7 @@ public class DropTable {
             stmt = conn.createStatement();
             
             try {
-                stmt.execute("/* !mycat: sql = select count(*) from orders for update */SET UNIQUE_CHECKS=0");
+                stmt.execute("/*#mycat: sql = select count(*) from orders for update */SET UNIQUE_CHECKS=0");
                 stmt.execute("/*!mycat: sql = select count(*) from orders for update */SET FOREIGN_KEY_CHECKS=0");
                 
 //                stmt.execute("SET UNIQUE_CHECKS=0");
@@ -181,7 +181,7 @@ public class DropTable {
                 	stmt.execute(sql);
                 }
                 
-            	 stmt.execute("/* !mycat: sql = select count(*) from orders for update */SET FOREIGN_KEY_CHECKS=1");
+            	 stmt.execute("/*#mycat: sql = select count(*) from orders for update */SET FOREIGN_KEY_CHECKS=1");
 
                 System.out.printf("\n...TPCC drop Table  COMPLETED SUCCESSFULLY.\n");
             } catch (Exception e) {

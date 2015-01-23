@@ -240,7 +240,7 @@ public class TpccLoad implements TpccConstants {
             } catch (SQLException e) {
                 throw new RuntimeException("Could not create statement", e);
             }
-            String hint = "/* !mycat: sql = select count(*) from orders for update */";
+            String hint = "/*#mycat: sql = select count(*) from orders for update */";
             try {
             	String sql = "SET UNIQUE_CHECKS=0";
             	sql = hint + sql;

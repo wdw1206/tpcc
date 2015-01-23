@@ -61,8 +61,8 @@ public class TestTransaction {
             con.setAutoCommit(false);
             
             for(int i = 0; i < 1000; i++) {
-//        		String select = "/* !mycat: sql = update district set d_next_o_id = d_next_o_id WHERE d_id = 1 AND d_w_id = 4 */SELECT d_next_o_id FROM district WHERE d_id = 1 AND d_w_id = 4 FOR UPDATE";
-                String select = "/* !mycat: sql = update district set d_name = 'lqz' WHERE d_id = 1 AND d_w_id = 4 */SELECT d_next_o_id FROM district WHERE d_id = 1 AND d_w_id = 4 FOR UPDATE";
+//        		String select = "/*#mycat: sql = update district set d_next_o_id = d_next_o_id WHERE d_id = 1 AND d_w_id = 4 */SELECT d_next_o_id FROM district WHERE d_id = 1 AND d_w_id = 4 FOR UPDATE";
+                String select = "/*#mycat: sql = update district set d_name = 'lqz' WHERE d_id = 1 AND d_w_id = 4 */SELECT d_next_o_id FROM district WHERE d_id = 1 AND d_w_id = 4 FOR UPDATE";
 
 //        		String select = "SELECT d_next_o_id FROM district WHERE d_id = 2 AND d_w_id = 2 ";
                 st = con.createStatement();
