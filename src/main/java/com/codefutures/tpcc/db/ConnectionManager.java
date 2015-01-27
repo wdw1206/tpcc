@@ -5,53 +5,113 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import com.alibaba.druid.pool.DruidDataSource;
+import com.jolbox.bonecp.BoneCPDataSource;
 
 public class ConnectionManager {
-	private static DruidDataSource dataSource = null;
+//	private static DruidDataSource dataSource = null;
+	private static BoneCPDataSource dataSource = null;
 	private static boolean isInited = false;
 	
 	public static void init(String user, String password, String jdbcUrl) {
 		if(!isInited) {
-			dataSource = new DruidDataSource();
-			dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-			dataSource.setUsername(user);
-			dataSource.setPassword(password);
-			dataSource.setUrl(jdbcUrl);
-			dataSource.setInitialSize(30);
-			dataSource.setMinIdle(30);
-			dataSource.setMaxActive(100);
+			synchronized(ConnectionManager.class) {
+				if(isInited)
+					return;
+				try {
+					//加载数据库驱动  
+				    Class.forName("com.mysql.jdbc.Driver");  
+				    //创建一个DataSource对象  
+				    dataSource = new BoneCPDataSource();  
+				    //设置JDBC URL  
+				    dataSource.setJdbcUrl(jdbcUrl);  
+				    //设置用户名  
+				    dataSource.setUsername(user);  
+				    //设置密码  
+				    dataSource.setPassword(password);  
+				    //下面的代码是设置其它可选属性  以下参数多按照retail_mps中的dal-db-config.properties
+				    dataSource.setPartitionCount(3);
+				    dataSource.setMinConnectionsPerPartition(2);
+				    dataSource.setMaxConnectionsPerPartition(20);
+				    dataSource.setAcquireIncrement(2);
+				    
+				    dataSource.setConnectionTimeoutInMs(30000);
+				    dataSource.setMaxConnectionAgeInSeconds(172800);
+				    dataSource.setConnectionTestStatement("select 1");
+				    dataSource.setIdleMaxAgeInSeconds(3600);
+				    dataSource.setIdleConnectionTestPeriodInSeconds(1200);
+				    dataSource.setAcquireRetryAttempts(5);
+				    dataSource.setAcquireRetryDelayInMs(1000);
+				    dataSource.setLazyInit(false);
+//				    dataSource.setStatementCacheSize(50);
+				    dataSource.setLogStatementsEnabled(false);
+				    dataSource.setPoolAvailabilityThreshold(20);
+				              
+				    Connection connection;  
+				    connection = dataSource.getConnection();  
+				              
+				    //这里操作数据库  
+				    //...  
+				    //关闭数据库连接  
+				    connection.close();  
+				    isInited = true;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 			
-			// 启用监控统计功能
-			dataSource.setPoolPreparedStatements(false);
-			
-			dataSource.setTestWhileIdle(true);
-			dataSource.setValidationQuery("select 1");
-			dataSource.setTimeBetweenEvictionRunsMillis(60000);
-			dataSource.setMinEvictableIdleTimeMillis(300000);
-			isInited = true;
-		}
+		}   
 	}
 	
 	public static void init(String user, String password, String jdbcUrl,int initSize) {
 		if(!isInited) {
-			dataSource = new DruidDataSource();
-			dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-			dataSource.setUsername(user);
-			dataSource.setPassword(password);
-			dataSource.setUrl(jdbcUrl);
-			dataSource.setInitialSize(initSize);
-			dataSource.setMinIdle(initSize);
-			dataSource.setMaxActive(100);
+			synchronized(ConnectionManager.class) {
+				if(isInited)
+					return;
+				try {
+					//加载数据库驱动  
+				    Class.forName("com.mysql.jdbc.Driver");  
+				    //创建一个DataSource对象  
+				    dataSource = new BoneCPDataSource();  
+				    //设置JDBC URL  
+				    dataSource.setJdbcUrl(jdbcUrl);  
+				    //设置用户名  
+				    dataSource.setUsername(user);  
+				    //设置密码  
+				    dataSource.setPassword(password);  
+				    //下面的代码是设置其它可选属性  以下参数多按照retail_mps中的dal-db-config.properties
+				    dataSource.setPartitionCount(3);
+				    dataSource.setMinConnectionsPerPartition(2);
+				    dataSource.setMaxConnectionsPerPartition(20);
+				    dataSource.setAcquireIncrement(2);
+				    
+				    dataSource.setConnectionTimeoutInMs(30000);
+				    dataSource.setMaxConnectionAgeInSeconds(172800);
+				    dataSource.setConnectionTestStatement("select 1");
+				    dataSource.setIdleMaxAgeInSeconds(3600);
+				    dataSource.setIdleConnectionTestPeriodInSeconds(1200);
+				    dataSource.setAcquireRetryAttempts(5);
+				    dataSource.setAcquireRetryDelayInMs(1000);
+				    dataSource.setLazyInit(false);
+//				    dataSource.setStatementCacheSize(50);
+				    dataSource.setLogStatementsEnabled(false);
+				    dataSource.setPoolAvailabilityThreshold(20);
+				    dataSource.setDisableJMX(false);
+				              
+				    Connection connection;  
+				    connection = dataSource.getConnection();  
+				              
+				    //这里操作数据库  
+				    //...  
+				    //关闭数据库连接  
+				    connection.close();  
+//				    dataSource.close();
+				    isInited = true;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				isInited = true;
+			}
 			
-			// 启用监控统计功能
-			dataSource.setPoolPreparedStatements(false);
-			
-			dataSource.setTestWhileIdle(true);
-			dataSource.setValidationQuery("select 1");
-			dataSource.setTimeBetweenEvictionRunsMillis(60000);
-			dataSource.setMinEvictableIdleTimeMillis(300000);
-			isInited = true;
 		}
 	}
 	
