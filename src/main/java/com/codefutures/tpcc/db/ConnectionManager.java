@@ -29,9 +29,9 @@ public class ConnectionManager {
 				    //设置密码  
 				    dataSource.setPassword(password);  
 				    //下面的代码是设置其它可选属性  以下参数多按照retail_mps中的dal-db-config.properties
-				    dataSource.setPartitionCount(3);
-				    dataSource.setMinConnectionsPerPartition(2);
-				    dataSource.setMaxConnectionsPerPartition(20);
+				    dataSource.setPartitionCount(1);
+				    dataSource.setMinConnectionsPerPartition(5);//相当于最小连接数
+				    dataSource.setMaxConnectionsPerPartition(1000);//相当于最大连接数
 				    dataSource.setAcquireIncrement(2);
 				    
 				    dataSource.setConnectionTimeoutInMs(30000);
